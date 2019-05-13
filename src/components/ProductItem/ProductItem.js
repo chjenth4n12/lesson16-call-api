@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class ProductItem extends Component {
     render() {
@@ -14,7 +15,7 @@ class ProductItem extends Component {
                     <span className={`label label-${statusClassname}`}>{product.status ? 'con hang' : 'het hang'}</span>
                 </td>
                 <td>
-                    <button type="button" className="btn btn-large btn-block btn-success" onClick={() => this.onEdit(product)}>Edit</button>
+                    <Link to={`/product/${product.id}/edit`} className="btn btn-large btn-block btn-success">Edit</Link>
                     <button type="button" className="btn btn-large btn-block btn-danger" onClick={() => this.onDelete(product.id)}>Delete</button>
                 </td>
             </tr>
@@ -26,10 +27,6 @@ class ProductItem extends Component {
             console.log(id);
             this.props.onDelete(id);
         }
-    }
-
-    onEdit = (product) => {
-        this.props.onEdit(product);
     }
 }
 

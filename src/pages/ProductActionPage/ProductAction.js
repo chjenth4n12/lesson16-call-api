@@ -14,6 +14,21 @@ class ProductAction extends Component {
         }
     }
 
+    componentDidMount(){
+        var { match } = this.props;
+        if (match) {
+            var id = match.params.id;
+            callApi(`products/${id}`, 'GET', null).then(res => {
+                this.setState({
+                    id : id,
+                    txtName : res.data.name,
+                    txtPrice : res.data.price,
+                    chkbStatus : res.data.status
+                });
+            });
+        }
+    }
+
     onChange = (e) => {
         var target = e.target;
         var name = target.name;
@@ -25,25 +40,37 @@ class ProductAction extends Component {
 
     onSave = (e) => {
         e.preventDefault();
+        var { id, txtName, txtPrice, chkbStatus } = this.state;
         var { history } = this.props;
-        callApi('products', 'POST', {
-            name : this.state.txtName,
-            price : this.state.txtPrice,
-            status : this.state.chkbStatus
-        }).then( res => {
-            history.goBack(); // quay về trang trước đó
-            // history.push("/"); // quay về trang chỉ định
-        });
+        if (id) {
+            callApi(`products/${id}`, 'PUT', {
+                name : txtName,
+                price : txtPrice,
+                status : chkbStatus
+            }).then(res => {
+                history.goBack();
+            });
+        } else {
+            callApi('products', 'POST', {
+                name : txtName,
+                price : txtPrice,
+                status : chkbStatus
+            }).then( res => {
+                history.goBack(); // quay về trang trước đó
+                // history.push("/"); // quay về trang chỉ định
+            });
+        }
+        
     }
 
     render() {
-        var { txtName, txtPrice, chkbStatus } = this.state;
+        var { id, txtName, txtPrice, chkbStatus } = this.state;
         
         return (
             
             <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                 <form onSubmit={this.onSave}>
-                    <legend>Add Product</legend>
+                    <legend>{id ? 'Edit Product' : 'Add Product'}</legend>
                     <div className="form-group">
                         <label>Name Product: </label>
                         <input
