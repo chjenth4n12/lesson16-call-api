@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import callApi from '../../utils/apiCaller';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { addProductRequest, editProductRequest, getProductRequest } from '../../actions';
 
 class ProductAction extends Component {
 
@@ -18,13 +19,18 @@ class ProductAction extends Component {
         var { match } = this.props;
         if (match) {
             var id = match.params.id;
-            callApi(`products/${id}`, 'GET', null).then(res => {
-                this.setState({
-                    id : id,
-                    txtName : res.data.name,
-                    txtPrice : res.data.price,
-                    chkbStatus : res.data.status
-                });
+            this.props.getItemEditing(id);
+        }
+    }
+
+    componentWillReceiveProps (nextProps) {
+        if (nextProps && nextProps.product) {
+            var product = nextProps.product;
+            this.setState({
+                id : product.id,
+                txtName : product.name,
+                txtPrice : product.price,
+                chkbStatus : product.status
             });
         }
     }
@@ -43,24 +49,22 @@ class ProductAction extends Component {
         var { id, txtName, txtPrice, chkbStatus } = this.state;
         var { history } = this.props;
         if (id) {
-            callApi(`products/${id}`, 'PUT', {
+            this.props.editProductRequest({
+                id : id,
                 name : txtName,
                 price : txtPrice,
                 status : chkbStatus
-            }).then(res => {
-                history.goBack();
             });
+            history.goBack();
         } else {
-            callApi('products', 'POST', {
+            this.props.addProductRequest({
                 name : txtName,
                 price : txtPrice,
                 status : chkbStatus
-            }).then( res => {
-                history.goBack(); // quay về trang trước đó
-                // history.push("/"); // quay về trang chỉ định
             });
+            history.goBack(); // quay về trang trước đó
+            // history.push("/"); // quay về trang chỉ định
         }
-        
     }
 
     render() {
@@ -117,4 +121,24 @@ class ProductAction extends Component {
     }
 }
 
-export default ProductAction;
+const mapStateToProps = state => {
+    return {
+        product : state.productEditing
+    }
+}
+
+const mapDispatchToProps = (dispatch, props) => {
+    return {
+        addProductRequest : (product) => {
+            dispatch(addProductRequest(product));
+        },
+        getItemEditing : (id) => {
+            dispatch(getProductRequest(id));
+        },
+        editProductRequest : (product) => {
+            dispatch(editProductRequest(product));
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps) (ProductAction);

@@ -22,16 +22,6 @@ class Products extends Component {
     }
 
     onDelete = (id) => {
-        // var { products } = this.state;
-        // callApi(`products/${id}`, 'DELETE', null).then( res => {
-        //     var index = this.findIndex(id);
-        //     if (index !== -1) {
-        //         products.splice(index, 1);
-        //         this.setState({
-        //             products : products
-        //         });
-        //     }
-        // });
         this.props.deleteProductRequest(id);
     }
 
