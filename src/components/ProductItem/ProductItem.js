@@ -24,7 +24,6 @@ class ProductItem extends Component {
 
     onDelete = (id) => {
         if (confirm("Do you want to remove it?")) { //eslint-disable-line
-            console.log(id);
             this.props.onDelete(id);
         }
     }

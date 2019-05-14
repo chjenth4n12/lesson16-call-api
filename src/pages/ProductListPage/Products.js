@@ -3,23 +3,12 @@ import ProductList from '../../components/ProductList/ProductList';
 import ProductItem from '../../components/ProductItem/ProductItem';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import callApi from '../../utils/apiCaller';
+import { getAllProductsRequest, deleteProductRequest } from './../../actions/index';
 
 class Products extends Component {
 
-    constructor(props){
-        super(props);
-        this.state = {
-            products : []
-        };
-    }
-
     componentDidMount () {
-        callApi('products', 'GET', null).then(res => {
-            this.setState({
-                products : res.data
-            });
-        });
+        this.props.getAllProductsRequest();
     }
 
     findIndex (id) {
@@ -33,21 +22,21 @@ class Products extends Component {
     }
 
     onDelete = (id) => {
-        var { products } = this.state;
-        callApi(`products/${id}`, 'DELETE', null).then( res => {
-            var index = this.findIndex(id);
-            if (index !== -1) {
-                products.splice(index, 1);
-                this.setState({
-                    products : products
-                });
-            }
-            console.log(products);
-        });
+        // var { products } = this.state;
+        // callApi(`products/${id}`, 'DELETE', null).then( res => {
+        //     var index = this.findIndex(id);
+        //     if (index !== -1) {
+        //         products.splice(index, 1);
+        //         this.setState({
+        //             products : products
+        //         });
+        //     }
+        // });
+        this.props.deleteProductRequest(id);
     }
 
     render() {
-        var { products } = this.state;
+        var { products } = this.props;
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <Link to='/product/add' className="btn btn-info mb-10">Add Product</Link>
@@ -77,10 +66,21 @@ class Products extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return {
         products : state.products
     }
 }
 
-export default connect (mapStateToProps, null) (Products);
+const mapDispatchToProps = (dispatch, props) => {
+    return {
+        getAllProductsRequest : () => {
+            dispatch(getAllProductsRequest());
+        },
+        deleteProductRequest : (id) => {
+            dispatch(deleteProductRequest(id));
+        }
+    }
+}
+
+export default connect (mapStateToProps, mapDispatchToProps) (Products);
